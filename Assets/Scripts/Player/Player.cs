@@ -12,6 +12,7 @@ namespace MineAndRefact.Core
         [SerializeField] private float _movementMultiplier;
         [Min(0.01f)]
         [SerializeField] private float _standartActionDelay;
+        [SerializeField] private GameplayEventListener _gameplayEventListener;
 
 
         private Animator _animator;
@@ -77,9 +78,12 @@ namespace MineAndRefact.Core
 
         private void OnTriggerEnter(Collider other)
         {
-            if(other.TryGetComponent<IResource>(out IResource resource))
+            if(other.TryGetComponent<IResource>(out IResource resource) && resource.CanPickUp)
             {
                 resource.PickUp();
+
+                if (_gameplayEventListener != null)
+                    _gameplayEventListener.PickUpResource.Invoke(resource);
             }
         }
 

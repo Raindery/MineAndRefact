@@ -16,7 +16,15 @@ namespace MineAndRefact.Core
 
         public ResourceData ResourceSettings => _resourceSettings;
         public bool CanPickUp => _canPickUp;
-
+        public ResourceType Type
+        {
+            get
+            {
+                if (_resourceSettings == null)
+                    return ResourceType.Default;
+                return _resourceSettings.ResourceType;
+            }
+        }
 
 
         private Rigidbody _rigidbody;
@@ -52,6 +60,11 @@ namespace MineAndRefact.Core
 
         private void Awake()
         {
+            if (_resourceSettings == null)
+                throw new System.ArgumentNullException(nameof(_resourceSettings));
+
+            CachedSphereCollider.radius = _resourceSettings.PickUpRadius;
+
             _minDropImpulse = _resourceSettings.MinDropImpulse;
             _maxDropImpulse = _resourceSettings.MaxDropImpulse;
         }
@@ -84,10 +97,15 @@ namespace MineAndRefact.Core
 
         public void PickUp()
         {
-            if (!CanPickUp)
-                return;
-
             Destroy(gameObject);
         }
+    }
+
+    public enum ResourceType
+    {
+        Default,
+        Wood,
+        Metal,
+        Crystal
     }
 }

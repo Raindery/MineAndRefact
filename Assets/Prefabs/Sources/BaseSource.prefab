@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3005546249982519357}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.709, z: 0}
+  m_LocalPosition: {x: 0, y: 1.029, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 3942222512772063342}
   - component: {fileID: 3942222512772063340}
   - component: {fileID: 3942222512772063341}
+  - component: {fileID: 2210848094153012757}
   m_Layer: 0
   m_Name: BaseSource
   m_TagString: Untagged
@@ -144,3 +145,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sourceSettings: {fileID: 11400000, guid: 7a6eb80ba8cc1664f8c50e9769d187aa, type: 2}
   _resourceDropPoint: {fileID: 9017455398005281517}
+--- !u!65 &2210848094153012757
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3942222512772063339}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}

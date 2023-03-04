@@ -39,6 +39,12 @@ namespace MineAndRefact.Core
 
         private void Awake()
         {
+            if (_sourceSettings == null)
+                throw new System.ArgumentNullException(nameof(_sourceSettings));
+
+            CachedSphereCollider.radius = _sourceSettings.InteractionRadius;
+
+
             _kickAmountUntilDepletion = _sourceSettings.KickAmountUntilDeplection;
         }
 

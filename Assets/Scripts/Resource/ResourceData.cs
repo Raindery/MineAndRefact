@@ -6,6 +6,7 @@ namespace MineAndRefact.Core
     public class ResourceData : ScriptableObject
     {
         [Header("General")]
+        [SerializeField] private ResourceType _resourceType;
         [SerializeField] private float _pickUpDuration;
         [Min(0.1f)]
         [SerializeField] private float _pickUpRadius;
@@ -14,6 +15,7 @@ namespace MineAndRefact.Core
         [SerializeField] private Vector3 _maxDropImpulse;
 
 
+        public ResourceType ResourceType => _resourceType;
         public float PickUpDuration => _pickUpDuration;
         public float PickUpRadius => _pickUpRadius;
         public Vector3 MinDropImpulse => _minDropImpulse;

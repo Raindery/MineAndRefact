@@ -28,7 +28,8 @@ public class OnScreenFloatingJoystick : OnScreenControl, IPointerUpHandler, IDra
         }
     }
 
-    private void OnValidate()
+
+    private void Awake()
     {
         _floatingJoystick = GetComponent<FloatingJoystick>();
     }

@@ -4,6 +4,7 @@ namespace MineAndRefact.Core
     {
         ResourceData ResourceSettings { get; }
         bool CanPickUp { get; }
+        ResourceType Type { get; }
 
         void Drop();
         void PickUp();
