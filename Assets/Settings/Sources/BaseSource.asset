@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d773c8db3629a7f40a83dee93d8ba624, type: 3}
+  m_Name: BaseSource
+  m_EditorClassIdentifier: 
+  _interactionRadius: 5
+  _mineSpeed: 1
+  _miningResourcesAmount: 5
+  _kickAmountUntilDepletion: 10
+  _recoveryDuration: 5
+  _miningResource: {fileID: 8484122062504620391, guid: 3c9cd1151b8657a41b917e1d444e6053, type: 3}

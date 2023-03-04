@@ -1,28 +1,31 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(PlayerInput))]
-public class PlayerController : MonoBehaviour
+namespace MineAndRefact.Core
 {
-    private PlayerInput _playerInput;
-    private bool _hasMovement;
-    private Vector2 _direction;
-
-    public PlayerInput CachedPlayerInput
+    [RequireComponent(typeof(PlayerInput))]
+    public class PlayerController : MonoBehaviour
     {
-        get
+        private Vector2 _direction;
+
+
+        public Vector2 Direction => _direction;
+
+        private PlayerInput _playerInput;
+        public PlayerInput CachedPlayerInput
         {
-            if (_playerInput == null)
-                _playerInput = GetComponent<PlayerInput>();
-            return _playerInput;
+            get
+            {
+                if (_playerInput == null)
+                    _playerInput = GetComponent<PlayerInput>();
+                return _playerInput;
+            }
         }
-    }
 
-    public Vector2 Direction => _direction;
-
-
-    public void OnMovement(InputAction.CallbackContext context)
-    {
-        _direction = context.ReadValue<Vector2>();
+        
+        public void OnMovement(InputAction.CallbackContext context)
+        {
+            _direction = context.ReadValue<Vector2>();
+        }
     }
 }

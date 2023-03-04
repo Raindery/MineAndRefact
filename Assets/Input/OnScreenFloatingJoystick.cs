@@ -11,6 +11,7 @@ public class OnScreenFloatingJoystick : OnScreenControl, IPointerUpHandler, IDra
     [SerializeField]
     private string _controlPath;
 
+
     private FloatingJoystick _floatingJoystick;
 
 
