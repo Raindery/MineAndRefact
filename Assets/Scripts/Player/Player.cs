@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-
+using UnityEngine.Diagnostics;
 
 namespace MineAndRefact.Core
 {
@@ -13,7 +13,6 @@ namespace MineAndRefact.Core
         [Min(0.01f)]
         [SerializeField] private float _standartActionDelay;
         [SerializeField] private GameplayEventListener _gameplayEventListener;
-
 
         private Animator _animator;
         private PlayerController _playerController;
@@ -54,6 +53,9 @@ namespace MineAndRefact.Core
 
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.K))
+                Utils.ForceCrash(ForcedCrashCategory.Abort);
+                
             if (_hasPlayerController)
             {
                 if (_playerController.Direction != Vector2.zero)

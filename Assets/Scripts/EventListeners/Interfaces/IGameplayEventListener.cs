@@ -11,4 +11,3 @@ namespace MineAndRefact.Core
         UnityEvent<IResource> DropResourceInSpot { get; }
     }
 }
-
