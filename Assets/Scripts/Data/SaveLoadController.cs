@@ -80,10 +80,13 @@ namespace MineAndRefact.Core
                 _playerData.SetData(handler.Id, collectedData);
             }
 
-            if (_dataService.SaveData(_playerData))
-                Debug.Log("Save data success!");
-            else
-                Debug.LogWarning("Unable to save data!");
+            if (_debug)
+            {
+                if (_dataService.SaveData(_playerData))
+                    Debug.Log("Save data success!");
+                else
+                    Debug.LogWarning("Unable to save data!");
+            }
         }
 
         public void Load()
@@ -99,7 +102,6 @@ namespace MineAndRefact.Core
                     handler.SetData(handlerData);
             }
         }
-
     }
 }
 

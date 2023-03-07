@@ -16,10 +16,13 @@ namespace MineAndRefact.Core
 
         private Animator _animator;
         private PlayerController _playerController;
-        private bool _hasPlayerController;
-        private bool _hasAnimator;
         private Vector3 _moveDirection = new Vector3();
         private Coroutine _mineCoroutine;
+        private ISource _currentMiningSource;
+        private bool _hasPlayerController;
+        private bool _hasAnimator;
+        
+        
 
 
         private Transform _cachedTransform;
@@ -87,28 +90,47 @@ namespace MineAndRefact.Core
                 if (_gameplayEventListener != null)
                     _gameplayEventListener.PickUpResource.Invoke(resource);
             }
+
+
+            if(other.TryGetComponent<ISource>(out ISource source))
+            {
+                _currentMiningSource = source; 
+            }
+                
         }
 
         private void OnTriggerStay(Collider other)
         {
-            if (other.TryGetComponent<ISource>(out ISource source))
+            if(_currentMiningSource != null)
             {
-                if(_mineCoroutine == null && _moveDirection == Vector3.zero && !source.IsDepletion)
+                bool isMining = false;
+                if (_hasPlayerController)
                 {
-                    if (_hasAnimator)
-                        _animator.SetBool("IsMine", true);
-
-                    _mineCoroutine = Mine(source);
+                    if (!_playerController.IsHoldJoystick && !_currentMiningSource.IsDepletion)
+                        isMining = true;
+                    else if (_playerController.IsHoldJoystick || _currentMiningSource.IsDepletion)
+                        isMining = false;
                 }
-                else if(_mineCoroutine != null && (_moveDirection != Vector3.zero || source.IsDepletion))
+                else
                 {
-                    if (_hasAnimator)
-                        _animator.SetBool("IsMine", false);
+                    if (_moveDirection == Vector3.zero && !_currentMiningSource.IsDepletion)
+                        isMining = true;
+                    else if (_moveDirection != Vector3.zero || _currentMiningSource.IsDepletion)
+                        isMining = false;
+                }
 
+                if (isMining && _mineCoroutine == null)
+                {
+                    _mineCoroutine = Mine(_currentMiningSource);
+                }
+                else if(!isMining && _mineCoroutine != null)
+                {
                     StopCoroutine(_mineCoroutine);
                     _mineCoroutine = null;
                 }
-                    
+
+                if (_hasAnimator)
+                    _animator.SetBool("IsMine", isMining);     
             }
         }
 
@@ -116,6 +138,9 @@ namespace MineAndRefact.Core
         {
             if(other.TryGetComponent<ISource>(out ISource source))
             {
+                if (_currentMiningSource != null && _currentMiningSource == source)
+                    _currentMiningSource = null;
+
                 if (_hasAnimator)
                     _animator.SetBool("IsMine", false);
 

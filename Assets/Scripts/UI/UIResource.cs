@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using MineAndRefact.Core.Data;
+using DG.Tweening;
 
 namespace MineAndRefact.Core.UI
 {
@@ -14,10 +15,26 @@ namespace MineAndRefact.Core.UI
         [SerializeField] private Image _image;
         [SerializeField] private Text _amountText;
         [SerializeField] private GameplayEventListener _gameplayEventListener;
+        [Header("Animation Settings")]
+        [SerializeField] private Vector2 _addingScale;
+        [SerializeField] private float _duration;
+
 
         private int _resourceAmount = 0;
 
         public string Id => _id;
+
+
+        private Transform _cahcedTransform;
+        public Transform CachedTransform
+        {
+            get
+            {
+                if (_cahcedTransform == null)
+                    _cahcedTransform = transform;
+                return _cahcedTransform;
+            }
+        }
 
         private void OnEnable()
         {
@@ -43,6 +60,8 @@ namespace MineAndRefact.Core.UI
             {
                 _resourceAmount++;
                 _amountText.text = _resourceAmount.ToString();
+                CachedTransform.DORewind();
+                CachedTransform.DOPunchScale(_addingScale, _duration);
             }
         }
 

@@ -1,13 +1,18 @@
 using System.Collections;
 using UnityEngine;
+using DG.Tweening;
 
 namespace MineAndRefact.Core
 {
     [RequireComponent(typeof(SphereCollider))]
     public class Source : MonoBehaviour, ISource
     {
+        [Header("General")]
         [SerializeField] private SourceData _sourceSettings;
         [SerializeField] private Transform _resourceDropPoint;
+        [Header("Animation Settings")]
+        [SerializeField] private Vector3 _scaleOnMining;
+        [SerializeField] private float _duration;
 
 
         private int _kickAmountUntilDepletion;
@@ -25,6 +30,17 @@ namespace MineAndRefact.Core
                 if (_sphereCollider == null)
                     _sphereCollider = GetComponent<SphereCollider>();
                 return _sphereCollider;
+            }
+        }
+
+        private Transform _cachedTransform;
+        public Transform CachedTransform
+        {
+            get
+            {
+                if (_cachedTransform == null)
+                    _cachedTransform = transform;
+                return _cachedTransform;
             }
         }
 
@@ -57,6 +73,9 @@ namespace MineAndRefact.Core
 
                 if (IsDepletion)
                     StartCoroutine(Recovery());
+
+                CachedTransform.DORewind();
+                CachedTransform.DOPunchScale(_scaleOnMining, _duration);
 
                 DropResources();
             }

@@ -167,10 +167,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 674d676a4359bce4d8bdbeb7034ef6c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _id: 
   _type: 0
   _image: {fileID: 7575460400483938766}
   _amountText: {fileID: 7575460401904819300}
   _gameplayEventListener: {fileID: 0}
+  _addingScale: {x: 0.25, y: 0.25}
+  _duration: 0.15
 --- !u!1 &7575460401904819302
 GameObject:
   m_ObjectHideFlags: 0
