@@ -2,17 +2,26 @@
     "name": "PlayerControls",
     "maps": [
         {
-            "name": "Gameplay",
+            "name": "Player",
             "id": "427bef4c-3587-411f-ba19-b9d43a22dd4b",
             "actions": [
                 {
                     "name": "Movement",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "08336a18-2bee-489e-972a-10f4d48b808c",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "JoystickActive",
+                    "type": "Button",
+                    "id": "2bbf34da-ca84-41d6-804e-79c537e9f221",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -26,6 +35,17 @@
                     "action": "Movement",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "29d33066-0ca5-4526-a0f1-78a4a7e1f4c4",
+                    "path": "<Gamepad>/leftStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "On-Screen Joystick",
+                    "action": "JoystickActive",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
@@ -37,7 +57,7 @@
             "devices": [
                 {
                     "devicePath": "<Gamepad>",
-                    "isOptional": false,
+                    "isOptional": true,
                     "isOR": false
                 }
             ]

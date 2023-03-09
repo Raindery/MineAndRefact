@@ -3,9 +3,9 @@ using UnityEngine.InputSystem;
 
 namespace MineAndRefact.Core
 {
-    [RequireComponent(typeof(PlayerInput))]
     public class PlayerController : MonoBehaviour
     {
+        private PlayerControls _controls;
         private Vector2 _direction;
         private bool _isHoldJoystick;
 
@@ -13,22 +13,38 @@ namespace MineAndRefact.Core
         public bool IsHoldJoystick => _isHoldJoystick;
 
 
-        private PlayerInput _playerInput;
-        public PlayerInput CachedPlayerInput
+        private void Awake()
         {
-            get
-            {
-                if (_playerInput == null)
-                    _playerInput = GetComponent<PlayerInput>();
-                return _playerInput;
-            }
+            _controls = new PlayerControls();
+            _controls.Player.Movement.performed += OnMovement;
+            _controls.Player.JoystickActive.started += OnJoystickHold;
+            _controls.Player.JoystickActive.canceled += OnJoystickRealeased;
+        }
+
+        private void OnEnable()
+        {
+            _controls.Enable();
+        }
+
+        private void OnDisable()
+        {
+            _controls.Disable();
         }
 
 
         public void OnMovement(InputAction.CallbackContext context)
         {
-            _isHoldJoystick = context.action.IsPressed();
-            _direction = context.ReadValue<Vector2>();   
+            _direction = context.ReadValue<Vector2>();
+        }
+
+        public void OnJoystickHold(InputAction.CallbackContext context)
+        {
+            _isHoldJoystick = context.control.IsPressed();
+        }
+
+        public void OnJoystickRealeased(InputAction.CallbackContext context)
+        {
+            _isHoldJoystick = context.control.IsPressed();
         }
     }
 }

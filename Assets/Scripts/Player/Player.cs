@@ -11,7 +11,7 @@ namespace MineAndRefact.Core
         [Min(1f)]
         [SerializeField] private float _movementMultiplier;
         [Min(0.01f)]
-        [SerializeField] private float _standartActionDelay;
+        [SerializeField] private float _defaultActionDelay;
         [SerializeField] private GameplayEventListener _gameplayEventListener;
 
         private Animator _animator;
@@ -22,7 +22,16 @@ namespace MineAndRefact.Core
         private bool _hasPlayerController;
         private bool _hasAnimator;
         
-        
+        public bool CanDoAction
+        {
+            get
+            {
+                if (_hasPlayerController)
+                    return !_playerController.IsHoldJoystick;
+                else
+                    return _moveDirection == Vector3.zero;
+            }
+        }
 
 
         private Transform _cachedTransform;
@@ -104,20 +113,11 @@ namespace MineAndRefact.Core
             if(_currentMiningSource != null)
             {
                 bool isMining = false;
-                if (_hasPlayerController)
-                {
-                    if (!_playerController.IsHoldJoystick && !_currentMiningSource.IsDepletion)
-                        isMining = true;
-                    else if (_playerController.IsHoldJoystick || _currentMiningSource.IsDepletion)
-                        isMining = false;
-                }
-                else
-                {
-                    if (_moveDirection == Vector3.zero && !_currentMiningSource.IsDepletion)
-                        isMining = true;
-                    else if (_moveDirection != Vector3.zero || _currentMiningSource.IsDepletion)
-                        isMining = false;
-                }
+
+                if (CanDoAction && !_currentMiningSource.IsDepletion)
+                    isMining = true;
+                else if (!CanDoAction || _currentMiningSource.IsDepletion)
+                    isMining = false;
 
                 if (isMining && _mineCoroutine == null)
                 {
@@ -178,13 +178,13 @@ namespace MineAndRefact.Core
                 yield return new WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).IsName("Mining"));
             }
 
-            while (!source.IsDepletion)
+            while (source != null && !source.IsDepletion)
             {
                 float delay;
                 if (_hasAnimator)
                     delay = _animator.GetCurrentAnimatorStateInfo(0).length;
                 else
-                    delay = _standartActionDelay / mineSpeed;
+                    delay = _defaultActionDelay / mineSpeed;
 
                 yield return new WaitForSeconds(delay);
 

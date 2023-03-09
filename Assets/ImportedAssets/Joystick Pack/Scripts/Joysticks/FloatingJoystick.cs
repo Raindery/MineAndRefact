@@ -1,26 +1,40 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine.EventSystems;
 
 public class FloatingJoystick : Joystick
 {
+
+    private bool _isJoystickActive;
+    public bool IsJoystickActive
+    {
+        get
+        {
+            return _isJoystickActive;
+        }
+
+        private set
+        {
+            _isJoystickActive = value;
+            background.gameObject.SetActive(_isJoystickActive);
+        }
+    }
+
+
     protected override void Start()
     {
         base.Start();
-        background.gameObject.SetActive(false);
+        IsJoystickActive = false;
     }
 
     public override void OnPointerDown(PointerEventData eventData)
     {
         background.anchoredPosition = ScreenPointToAnchoredPosition(eventData.position);
-        background.gameObject.SetActive(true);
+        IsJoystickActive = true;
         base.OnPointerDown(eventData);
     }
 
     public override void OnPointerUp(PointerEventData eventData)
     {
-        background.gameObject.SetActive(false);
+        IsJoystickActive = false;
         base.OnPointerUp(eventData);
     }
 }

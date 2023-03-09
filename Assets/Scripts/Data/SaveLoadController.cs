@@ -7,34 +7,23 @@ namespace MineAndRefact.Core
 {
     public class SaveLoadController : MonoBehaviour
     {
-        [SerializeField] private string _pathToDataFolder;
         [SerializeField] private string _saveFileName = "save.data";
         [SerializeField] private List<MonoBehaviour> _saveLoadData; 
-        [SerializeField] private GameplayEventListener _gameplayEventListener;
         [SerializeField] private float _saveDuration;
         [Space]
         [SerializeField] private bool _debug;
 
         private IData _playerData;
         private IDataService _dataService;
-        private List<ISaveLoadHandler> _saveLoadHandlers;
-
-
-
-        private void OnValidate()
-        {
-            _pathToDataFolder = Application.persistentDataPath;
-        }
+        private readonly List<ISaveLoadHandler> _saveLoadHandlers = new List<ISaveLoadHandler>();
 
         private void Awake()
         {   
             _playerData = new PlayerData();
-            _dataService = new DataService(_pathToDataFolder, _saveFileName);
+            _dataService = new DataService(Application.persistentDataPath, _saveFileName);
 
             if(_saveLoadData != null && _saveLoadData.Count > 0)
             {
-                _saveLoadHandlers = new List<ISaveLoadHandler>();
-
                 foreach (MonoBehaviour monoBehaviour in _saveLoadData)
                 {
                     ISaveLoadHandler[] allHandlersOnObject = monoBehaviour.GetComponents<ISaveLoadHandler>();
@@ -80,9 +69,13 @@ namespace MineAndRefact.Core
                 _playerData.SetData(handler.Id, collectedData);
             }
 
+
+
+            bool saveSuccessful = _dataService.SaveData(_playerData);
+
             if (_debug)
             {
-                if (_dataService.SaveData(_playerData))
+                if (saveSuccessful)
                     Debug.Log("Save data success!");
                 else
                     Debug.LogWarning("Unable to save data!");

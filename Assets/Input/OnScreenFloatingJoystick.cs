@@ -1,17 +1,16 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.OnScreen;
 
 [AddComponentMenu("Input/On-Screen Floating Joystick")]
 [RequireComponent(typeof(FloatingJoystick))]
-public class OnScreenFloatingJoystick : OnScreenControl, IPointerUpHandler, IDragHandler
+public class OnScreenFloatingJoystick : OnScreenControl, IDragHandler, IPointerUpHandler
 {
     [InputControl(layout = "Vector2")]
     [SerializeField]
     private string _controlPath;
-
-
     private FloatingJoystick _floatingJoystick;
 
 
@@ -42,6 +41,6 @@ public class OnScreenFloatingJoystick : OnScreenControl, IPointerUpHandler, IDra
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        SendValueToControl(_floatingJoystick.Direction);
+        SendValueToControl(Vector2.zero);
     }
 }
