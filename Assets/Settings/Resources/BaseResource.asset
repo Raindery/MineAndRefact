@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c95c8537efcd7794eaaf3a6d6825349a, type: 3}
   m_Name: BaseResource
   m_EditorClassIdentifier: 
+  _resourceId: BaseResource
   _pickUpDuration: 4
   _pickUpRadius: 4
   _minDropImpulse: {x: -2.5, y: 1.5, z: -2.5}

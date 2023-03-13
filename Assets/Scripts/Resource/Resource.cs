@@ -1,5 +1,8 @@
 using System.Collections;
 using UnityEngine;
+using DG.Tweening;
+using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
 
 namespace MineAndRefact.Core
 {
@@ -8,24 +11,38 @@ namespace MineAndRefact.Core
     {
         [SerializeField] private ResourceData _resourceSettings;
 
-
         private bool _canPickUp;
+        private BoxCollider _collider;
+        private bool _hasCollider;
+        private bool _isInteractionsDisabled;
         private Vector3 _minDropImpulse;
         private Vector3 _maxDropImpulse;
+        
 
 
         public ResourceData ResourceSettings => _resourceSettings;
         public bool CanPickUp => _canPickUp;
-        public ResourceType Type
+        
+        public string ResourceId
         {
             get
             {
                 if (_resourceSettings == null)
-                    return ResourceType.Default;
-                return _resourceSettings.ResourceType;
+                    return string.Empty;
+                return _resourceSettings.ResourceId;
             }
         }
 
+        private Transform _cachedTransform;
+        public Transform CachedTransform
+        {
+            get
+            {
+                if (_cachedTransform == null)
+                    _cachedTransform = transform;
+                return _cachedTransform;
+            }
+        }
 
         private Rigidbody _rigidbody;
         public Rigidbody CachedRigidbody
@@ -67,6 +84,13 @@ namespace MineAndRefact.Core
 
             _minDropImpulse = _resourceSettings.MinDropImpulse;
             _maxDropImpulse = _resourceSettings.MaxDropImpulse;
+
+            _hasCollider = TryGetComponent<BoxCollider>(out _collider);
+        }
+
+        private void OnDisable()
+        {
+            CachedTransform.DOKill();
         }
 
 
@@ -78,34 +102,54 @@ namespace MineAndRefact.Core
                 yield return new WaitForSeconds(_resourceSettings.PickUpDuration);
 
             _canPickUp = true;
-
             yield break;
         }
 
-        public void Drop()
+        public void Extract()
         {
             StartCoroutine(WaitPickUpDuration());
-
-            Vector3 impulseVector = new Vector3(
-                    Random.Range(_minDropImpulse.x, _maxDropImpulse.x),
-                    Random.Range(_minDropImpulse.y, _maxDropImpulse.y),
-                    Random.Range(_minDropImpulse.z, _maxDropImpulse.z)
-                    );
-
+            Vector3 impulseVector = GetRandomImpulse();
             CachedRigidbody.AddForce(impulseVector, ForceMode.Impulse);
         }
 
         public void PickUp()
         {
+            ResourceDestroy();
+        }
+
+        
+
+        public Coroutine MoveTo(Vector3 target, float duration)
+        {
+            return StartCoroutine(MoveToCoroutine(target, duration));
+        }
+
+        private IEnumerator MoveToCoroutine(Vector3 target, float duration)
+        {
+            yield return CachedTransform.DOMove(target, duration).WaitForCompletion();
+            yield break;
+        }
+
+        public void SetEnableInteractionComponents(bool value)
+        {
+            if (_hasCollider)
+                _collider.enabled = value;
+            CachedRigidbody.isKinematic = !value;
+            CachedSphereCollider.enabled = !value;
+        }
+
+        public void ResourceDestroy()
+        {
             Destroy(gameObject);
         }
-    }
 
-    public enum ResourceType
-    {
-        Default,
-        Wood,
-        Metal,
-        Crystal
+        private Vector3 GetRandomImpulse()
+        {
+            return new Vector3(
+                    Random.Range(_minDropImpulse.x, _maxDropImpulse.x),
+                    Random.Range(_minDropImpulse.y, _maxDropImpulse.y),
+                    Random.Range(_minDropImpulse.z, _maxDropImpulse.z)
+                    );
+        }
     }
 }

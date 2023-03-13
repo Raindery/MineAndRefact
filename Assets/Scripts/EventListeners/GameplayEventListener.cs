@@ -1,18 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace MineAndRefact.Core
 {
-    public class GameplayEventListener : MonoBehaviour, IGameplayEventListener
+    public class GameplayEventListener : MonoBehaviour
     {
-        private UnityEvent<IResource> _pickUpResource = new UnityEvent<IResource>();
-        private UnityEvent<IResource> _dropResourceInSpot = new UnityEvent<IResource>();
+        [Header("Gameplay Events")]
+        [SerializeField] private UnityEvent<string, int> _resourceDataLoaded = new UnityEvent<string, int>();
+        [SerializeField] private UnityEvent<string, int> _resourceAmountChanged = new UnityEvent<string, int>();
 
-        public UnityEvent<IResource> PickUpResource => _pickUpResource;
 
-        public UnityEvent<IResource> DropResourceInSpot => _dropResourceInSpot;
+        public UnityEvent<string, int> ResourceAmountChanged => _resourceAmountChanged;
+        public UnityEvent<string, int> ResourceDataLoaded => _resourceDataLoaded;
     }
 }
 

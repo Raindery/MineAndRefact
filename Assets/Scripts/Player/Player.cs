@@ -1,26 +1,32 @@
+using DG.Tweening;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Diagnostics;
 
 namespace MineAndRefact.Core
 {
-    [RequireComponent(typeof(NavMeshAgent))]
+    [RequireComponent(typeof(NavMeshAgent), typeof(ResourceHolder))]
     public class Player : MonoBehaviour
     {
-        [Min(1f)]
-        [SerializeField] private float _movementMultiplier;
-        [Min(0.01f)]
-        [SerializeField] private float _defaultActionDelay;
-        [SerializeField] private GameplayEventListener _gameplayEventListener;
+        [Header("General")]
+        [SerializeField] private PlayerSettings _playerSettings;
+        [SerializeField] private Transform _dropResourcePoint;
+        
 
         private Animator _animator;
+        private bool _hasAnimator;
         private PlayerController _playerController;
+        private bool _hasPlayerController;
         private Vector3 _moveDirection = new Vector3();
         private Coroutine _mineCoroutine;
         private ISource _currentMiningSource;
-        private bool _hasPlayerController;
-        private bool _hasAnimator;
+        private Coroutine _dropCoroutine;
+        private ISpot _currentDropingSpot;
+        private Queue<IResource> _currentDropResourcesInSpot;
+        
+        
         
         public bool CanDoAction
         {
@@ -56,11 +62,33 @@ namespace MineAndRefact.Core
             }
         }
 
+        private ResourceHolder _resourceHolder;
+        public ResourceHolder CachedResourceHolder
+        {
+            get
+            {
+                if (_resourceHolder == null)
+                    _resourceHolder = GetComponent<ResourceHolder>();
+                return _resourceHolder;
+            }
+        }
+
 
         private void Awake()
         {
+            if (_playerSettings == null)
+                throw new System.ArgumentNullException(nameof(_playerSettings));
+
             _hasPlayerController = TryGetComponent<PlayerController>(out _playerController);
             _hasAnimator = TryGetComponent<Animator>(out _animator) && _animator.isActiveAndEnabled;
+
+            _currentDropResourcesInSpot = new Queue<IResource>();
+        }
+
+        private void OnValidate()
+        {
+            if (_playerSettings == null)
+                throw new System.ArgumentNullException(nameof(_playerSettings));
         }
 
         private void Update()
@@ -95,42 +123,65 @@ namespace MineAndRefact.Core
             if(other.TryGetComponent<IResource>(out IResource resource) && resource.CanPickUp)
             {
                 resource.PickUp();
-
-                if (_gameplayEventListener != null)
-                    _gameplayEventListener.PickUpResource.Invoke(resource);
+                string resourceId = resource.ResourceId;
+                CachedResourceHolder.IncreaseResourceAmount(resourceId, 1);
             }
-
 
             if(other.TryGetComponent<ISource>(out ISource source))
-            {
                 _currentMiningSource = source; 
-            }
-                
+
+            if(other.TryGetComponent<ISpot>(out ISpot spot))
+                _currentDropingSpot = spot;
         }
 
         private void OnTriggerStay(Collider other)
         {
             if(_currentMiningSource != null)
             {
-                bool isMining = false;
-
+                bool isCanMining = false;
                 if (CanDoAction && !_currentMiningSource.IsDepletion)
-                    isMining = true;
+                    isCanMining = true;
                 else if (!CanDoAction || _currentMiningSource.IsDepletion)
-                    isMining = false;
+                    isCanMining = false;
 
-                if (isMining && _mineCoroutine == null)
+                if (isCanMining && _mineCoroutine == null)
                 {
                     _mineCoroutine = Mine(_currentMiningSource);
                 }
-                else if(!isMining && _mineCoroutine != null)
+                else if(!isCanMining && _mineCoroutine != null)
                 {
                     StopCoroutine(_mineCoroutine);
                     _mineCoroutine = null;
                 }
 
                 if (_hasAnimator)
-                    _animator.SetBool("IsMine", isMining);     
+                    _animator.SetBool("IsMine", isCanMining);     
+            }
+
+            if(_currentDropingSpot != null)
+            {
+                int requiredResourceAmount =
+                    CachedResourceHolder.GetResourceAmount(_currentDropingSpot.SpotSettings.RequiredResource.ResourceId);
+
+                bool isCanDropping = false;
+                if (CanDoAction && !_currentDropingSpot.IsFullLoaded && !_currentDropingSpot.IsRecyclingProcessed && requiredResourceAmount > 0)
+                    isCanDropping = true;
+                else if (!CanDoAction || _currentDropingSpot.IsFullLoaded || _currentDropingSpot.IsRecyclingProcessed)
+                    isCanDropping = false;
+
+                if(isCanDropping && _dropCoroutine == null)
+                {
+                    _dropCoroutine = DropInSpot(_currentDropingSpot);
+                }
+                else if(!isCanDropping && _dropCoroutine != null )
+                {
+                    StopCoroutine(_dropCoroutine);
+                    _dropCoroutine = null;
+
+                    if (_currentDropResourcesInSpot.Count > 0)
+                        ClearAndDestroyDropResources();
+                }
+                    
             }
         }
 
@@ -150,13 +201,29 @@ namespace MineAndRefact.Core
                     _mineCoroutine = null;
                 }
             }
+
+            if(other.TryGetComponent<ISpot>(out ISpot spot))
+            {
+                if (_currentDropingSpot != null && _currentDropingSpot == spot)
+                    _currentDropingSpot = null;
+
+                if(_dropCoroutine != null)
+                {
+                    StopCoroutine(_dropCoroutine);
+                    _dropCoroutine = null;
+                }
+
+                if (_currentDropResourcesInSpot.Count > 0)
+                    ClearAndDestroyDropResources();
+                    
+            }
         }
 
 
         public void Move(Vector2 direction)
         {
             _moveDirection.Set(direction.x, 0, direction.y);
-            CachedNavMeshAgent.Move(_moveDirection * _movementMultiplier * Time.deltaTime);
+            CachedNavMeshAgent.Move(_moveDirection * _playerSettings.MovementMultiplier * Time.deltaTime);
             Rotate();
         }
 
@@ -184,7 +251,7 @@ namespace MineAndRefact.Core
                 if (_hasAnimator)
                     delay = _animator.GetCurrentAnimatorStateInfo(0).length;
                 else
-                    delay = _defaultActionDelay / mineSpeed;
+                    delay = _playerSettings.DefaultActionDelay / mineSpeed;
 
                 yield return new WaitForSeconds(delay);
 
@@ -196,6 +263,74 @@ namespace MineAndRefact.Core
         public Coroutine Mine(ISource source)
         {
             return StartCoroutine(MineCoroutine(source));
+        }
+
+        private IEnumerator DropInSpotCoroutine(ISpot spot)
+        {
+            while (spot != null)
+            {
+                int resourceAmount = CachedResourceHolder.GetResourceAmount(spot.SpotSettings.RequiredResource.ResourceId);
+                if (resourceAmount <= 0)
+                    break;
+
+                int maxDropResourceAmount = _playerSettings.MaxDropResourceAmountInOneTime;
+                if (maxDropResourceAmount > spot.RemainsToLoadAmountResources)
+                    maxDropResourceAmount = spot.RemainsToLoadAmountResources;
+
+                if (maxDropResourceAmount > resourceAmount)
+                    maxDropResourceAmount = resourceAmount;
+
+                for (int i = 0; i < maxDropResourceAmount; i++)
+                {
+                    IResource resource = Instantiate(spot.SpotSettings.RequiredResource, _dropResourcePoint.position, Quaternion.identity);
+
+                    resource.SetEnableInteractionComponents(false);
+                    _currentDropResourcesInSpot.Enqueue(resource);
+
+                    Vector3 scutter = resource.CachedTransform.position + GetRandomResourceScutter();
+                    if (i >= maxDropResourceAmount - 1)
+                        yield return resource.MoveTo(scutter, _playerSettings.ScutterMovementDuration);
+                    else
+                        resource.MoveTo(scutter, _playerSettings.ScutterMovementDuration);
+                }
+
+                yield return new WaitForSeconds(_playerSettings.DropResourceInSpotDelay);
+
+                while (_currentDropResourcesInSpot.TryPeek(out IResource resource))
+                {
+                    yield return resource.MoveTo(spot.CachedTransform.position, _playerSettings.DropResourceInSpotDuration);
+
+                    CachedResourceHolder.DecreaseResourceAmount(resource.ResourceId, 1);
+                    _currentDropResourcesInSpot.Dequeue();
+
+                    spot.LoadRequiredResource(resource.ResourceId);
+                    resource.ResourceDestroy();
+                }
+            }
+
+            yield break;
+        }
+        public Coroutine DropInSpot(ISpot spot)
+        {
+            return StartCoroutine(DropInSpotCoroutine(spot));
+        }
+        
+
+        private void ClearAndDestroyDropResources()
+        {
+            while(_currentDropResourcesInSpot.TryDequeue(out IResource resource))
+            {
+                resource.ResourceDestroy();
+            }
+        }
+
+        private Vector3 GetRandomResourceScutter()
+        {
+            return new Vector3(
+                Random.Range(_playerSettings.MinDropResourceInSpotScatter.x, _playerSettings.MaxDropResourceInSpotScatter.x),
+                Random.Range(_playerSettings.MinDropResourceInSpotScatter.y, _playerSettings.MaxDropResourceInSpotScatter.y),
+                Random.Range(_playerSettings.MinDropResourceInSpotScatter.z, _playerSettings.MaxDropResourceInSpotScatter.z)
+                );
         }
     }
 }

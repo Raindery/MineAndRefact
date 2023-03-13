@@ -15,6 +15,6 @@ MonoBehaviour:
   _interactionRadius: 5
   _mineSpeed: 1
   _miningResourcesAmount: 5
-  _kickAmountUntilDepletion: 10
-  _recoveryDuration: 5
+  _kickAmountUntilDepletion: 3
+  _recoveryDuration: 20
   _miningResource: {fileID: 8484122062504620391, guid: 3c9cd1151b8657a41b917e1d444e6053, type: 3}

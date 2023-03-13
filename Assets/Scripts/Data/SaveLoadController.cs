@@ -7,15 +7,18 @@ namespace MineAndRefact.Core
 {
     public class SaveLoadController : MonoBehaviour
     {
+        [Header("General")]
         [SerializeField] private string _saveFileName = "save.data";
         [SerializeField] private List<MonoBehaviour> _saveLoadData; 
         [SerializeField] private float _saveDuration;
         [Space]
+        [Header("Debug")]
         [SerializeField] private bool _debug;
 
         private IData _playerData;
         private IDataService _dataService;
         private readonly List<ISaveLoadHandler> _saveLoadHandlers = new List<ISaveLoadHandler>();
+
 
         private void Awake()
         {   
@@ -26,13 +29,22 @@ namespace MineAndRefact.Core
             {
                 foreach (MonoBehaviour monoBehaviour in _saveLoadData)
                 {
+                    if (monoBehaviour == null)
+                    {
+                        Debug.LogWarning("Save load data is null!");
+                        continue;
+                    }
+
                     ISaveLoadHandler[] allHandlersOnObject = monoBehaviour.GetComponents<ISaveLoadHandler>();
 
                     if (allHandlersOnObject.Length > 0)
                         _saveLoadHandlers.AddRange(allHandlersOnObject);
                 }
             }
+        }
 
+        private void Start()
+        {
             if (_dataService.DataExsist)
                 Load();
         }
@@ -41,6 +53,7 @@ namespace MineAndRefact.Core
         {
             StartCoroutine(SaveWithDuration());
         }
+
 
         private IEnumerator SaveWithDuration()
         {
@@ -97,5 +110,3 @@ namespace MineAndRefact.Core
         }
     }
 }
-
-
