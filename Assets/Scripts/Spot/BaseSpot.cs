@@ -6,7 +6,7 @@ using UnityEngine;
 namespace MineAndRefact.Core
 {
     [RequireComponent(typeof(SphereCollider))]
-    public class Spot : MonoBehaviour, ISpot
+    public class BaseSpot : MonoBehaviour, ISpot
     {
         private const float RECYCLING_PROGRESS_UPDATE_STEP = 0.1f;
 
@@ -149,8 +149,8 @@ namespace MineAndRefact.Core
                 if (_hasSpotUi)
                     _uiSpot.UpdateAmountResource(_remainsToLoadAmountResources);
 
-                CachedTransform.DORewind();
-                CachedTransform.DOPunchScale(_additionalScaleOnDrop, _scaleOnDropDuration);
+                CachedTransform.DOComplete();
+                CachedTransform.DOPunchScale(_additionalScaleOnDrop, _scaleOnDropDuration, elasticity: 0.5f);
 
                 if (IsFullLoaded)
                 {

@@ -17,13 +17,13 @@ namespace MineAndRefact.Core
         [Min(1f)]
         [SerializeField] private float _recoveryDuration = 1f;
         [Space]
-        [SerializeField] private Resource _miningResource;
+        [SerializeField] private BaseResource _miningResource;
 
         public float InteractionRadius => _interactionRadius;
         public float MineSpeed => _mineSpeed;
         public int MiningResourceAmount => _miningResourcesAmount;
         public int KickAmountUntilDeplection => _kickAmountUntilDepletion;
         public float RecoveryDuration => _recoveryDuration;
-        public Resource MiningResource => _miningResource;
+        public BaseResource MiningResource => _miningResource;
     }
 }

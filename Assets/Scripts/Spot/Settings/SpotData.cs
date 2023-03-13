@@ -9,11 +9,11 @@ namespace MineAndRefact.Core
         [Min(0.1f)]
         [SerializeField] private float _iteractionRadius;
         [Header("Required Resource Settings")]
-        [SerializeField] private Resource _requiredResource;
+        [SerializeField] private BaseResource _requiredResource;
         [Min(1)]
         [SerializeField] private int _amountRequiredResource;
         [Header("Received Resource Settingss")]
-        [SerializeField] private Resource _receivedResource;
+        [SerializeField] private BaseResource _receivedResource;
         [Min(1)]
         [SerializeField] private int _amountReceivedResource;
         [Header("Recycling")]
@@ -21,8 +21,8 @@ namespace MineAndRefact.Core
 
         public float IteractionRadius => _iteractionRadius;
         public int AmountRequiredResource => _amountRequiredResource;
-        public Resource RequiredResource => _requiredResource;
-        public Resource ReceivedResource => _receivedResource; 
+        public BaseResource RequiredResource => _requiredResource;
+        public BaseResource ReceivedResource => _receivedResource; 
         public int AmountReceivedResource => _amountReceivedResource;
         public float RecyclingDuration => _recyclingDuration;
     }

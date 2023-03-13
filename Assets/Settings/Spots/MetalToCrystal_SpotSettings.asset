@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3ab6d98c237e7534eabb7d8fa77c37a9, type: 3}
-  m_Name: BaseSpot
+  m_Name: MetalToCrystal_SpotSettings
   m_EditorClassIdentifier: 
-  _iteractionRadius: 5
-  _requiredResource: {fileID: 6356696283709728628, guid: 254a127b12541c8498bb88eb5c75d536, type: 3}
-  _amountRequiredResource: 10
-  _receivedResource: {fileID: 6356696283709728628, guid: 254a127b12541c8498bb88eb5c75d536, type: 3}
-  _amountReceivedResource: 5
+  _iteractionRadius: 3
+  _requiredResource: {fileID: 863575600439384687, guid: 838362b8e6a65dd4681eb8553933606f, type: 3}
+  _amountRequiredResource: 5
+  _receivedResource: {fileID: 383523837826267991, guid: c5552b8db251dfe4594a3a73a3b2a949, type: 3}
+  _amountReceivedResource: 1
   _recyclingDuration: 20

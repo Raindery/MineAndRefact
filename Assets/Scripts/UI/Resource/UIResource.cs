@@ -36,6 +36,11 @@ namespace MineAndRefact.Core.UI
             gameObject.SetActive(false);
         }
 
+        private void OnDisable()
+        {
+            CachedTransform.DOKill();
+        }
+
 
         public void ChangeResourceAmount(int amount)
         {
@@ -51,7 +56,7 @@ namespace MineAndRefact.Core.UI
 
             if (_resourceAmount < changedAmount)
             {
-                CachedTransform.DORewind();
+                CachedTransform.DOComplete();
                 CachedTransform.DOPunchScale(_addingScale, _duration);
             }
 

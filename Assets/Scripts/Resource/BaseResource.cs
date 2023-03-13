@@ -5,7 +5,7 @@ using UnityEngine;
 namespace MineAndRefact.Core
 {
     [RequireComponent(typeof(Rigidbody), typeof(SphereCollider))]
-    public class Resource : MonoBehaviour, IResource
+    public class BaseResource : MonoBehaviour, IResource
     {
         [SerializeField] private ResourceData _resourceSettings;
 

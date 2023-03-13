@@ -6,7 +6,7 @@ using UnityEngine;
 namespace MineAndRefact.Core
 {
     [RequireComponent(typeof(SphereCollider))]
-    public class Source : MonoBehaviour, ISource
+    public class BaseSource : MonoBehaviour, ISource
     {
         private const float RECOVERY_UPDATE_STEP = 0.1f;
 
@@ -126,8 +126,8 @@ namespace MineAndRefact.Core
                 if (IsDepletion)
                     StartCoroutine(Recovery());
 
-                CachedTransform.DORewind();
-                CachedTransform.DOPunchScale(_scaleOnMining, _scaleOnMiningDuration);
+                CachedTransform.DOComplete();
+                CachedTransform.DOPunchScale(_scaleOnMining, _scaleOnMiningDuration, elasticity: 0.5f);
 
                 ExtractResources();
             }

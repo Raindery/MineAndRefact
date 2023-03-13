@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3ab6d98c237e7534eabb7d8fa77c37a9, type: 3}
-  m_Name: BaseSpot
+  m_Name: WoodToMetall_SpotSettings
   m_EditorClassIdentifier: 
-  _iteractionRadius: 5
-  _requiredResource: {fileID: 6356696283709728628, guid: 254a127b12541c8498bb88eb5c75d536, type: 3}
+  _iteractionRadius: 2
+  _requiredResource: {fileID: 3583291400111003654, guid: 7bce002b3310d934598ea75d9e8309ad, type: 3}
   _amountRequiredResource: 10
-  _receivedResource: {fileID: 6356696283709728628, guid: 254a127b12541c8498bb88eb5c75d536, type: 3}
+  _receivedResource: {fileID: 863575600439384687, guid: 838362b8e6a65dd4681eb8553933606f, type: 3}
   _amountReceivedResource: 5
-  _recyclingDuration: 20
+  _recyclingDuration: 10

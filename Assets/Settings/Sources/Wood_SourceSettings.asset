@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d773c8db3629a7f40a83dee93d8ba624, type: 3}
-  m_Name: BaseSource
+  m_Name: Wood_SourceSettings
   m_EditorClassIdentifier: 
-  _interactionRadius: 5
-  _mineSpeed: 1
-  _miningResourcesAmount: 5
-  _kickAmountUntilDepletion: 3
-  _recoveryDuration: 20
-  _miningResource: {fileID: 6356696283709728628, guid: 254a127b12541c8498bb88eb5c75d536, type: 3}
+  _interactionRadius: 2
+  _mineSpeed: 1.5
+  _miningResourcesAmount: 10
+  _kickAmountUntilDepletion: 20
+  _recoveryDuration: 5
+  _miningResource: {fileID: 3583291400111003654, guid: 7bce002b3310d934598ea75d9e8309ad, type: 3}
