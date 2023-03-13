@@ -14,7 +14,6 @@ namespace MineAndRefact.Core
         [SerializeField] private Vector3 _minDropImpulse;
         [SerializeField] private Vector3 _maxDropImpulse;
 
-
         public string ResourceId => _resourceId;
         public float PickUpDuration => _pickUpDuration;
         public float PickUpRadius => _pickUpRadius;

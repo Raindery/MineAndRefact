@@ -13,7 +13,6 @@ public class OnScreenFloatingJoystick : OnScreenControl, IDragHandler, IPointerU
     private string _controlPath;
     private FloatingJoystick _floatingJoystick;
 
-
     protected override string controlPathInternal
     {
         get

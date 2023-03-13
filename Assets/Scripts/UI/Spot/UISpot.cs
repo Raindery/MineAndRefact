@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 namespace MineAndRefact.Core.UI
 {
@@ -50,8 +48,5 @@ namespace MineAndRefact.Core.UI
         {
             _recyclingProgressText.gameObject.SetActive(false);
         }
-
-
     }
 }
-

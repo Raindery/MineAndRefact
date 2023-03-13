@@ -40,7 +40,6 @@ namespace MineAndRefact.Core.UI
         public void ChangeResourceAmount(int amount)
         {
             gameObject.SetActive(amount > 0);
-
             _resourceAmount = amount;
             _amountText.text = _resourceAmount.ToString();
         }

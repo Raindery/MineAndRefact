@@ -1,7 +1,7 @@
 using DG.Tweening;
+using MineAndRefact.Core.UI;
 using System.Collections;
 using UnityEngine;
-using MineAndRefact.Core.UI;
 
 namespace MineAndRefact.Core
 {
@@ -31,10 +31,8 @@ namespace MineAndRefact.Core
                 return CachedTransform.position;
             }
         }
-
         public bool IsDepletion => _kickAmountUntilDepletion <= 0;
         public SourceData SourceSettings => _sourceSettings;
-
 
         private SphereCollider _sphereCollider;
         public SphereCollider CachedSphereCollider
@@ -82,23 +80,6 @@ namespace MineAndRefact.Core
             CachedTransform.DOKill();
         }
 
-
-        public void Mine()
-        {
-            if(_kickAmountUntilDepletion > 0)
-            {
-                _kickAmountUntilDepletion--;
-
-                if (IsDepletion)
-                    StartCoroutine(Recovery());
-
-                CachedTransform.DORewind();
-                CachedTransform.DOPunchScale(_scaleOnMining, _scaleOnMiningDuration);
-
-                ExtractResources();
-            }
-        }
-
         private IEnumerator Recovery()
         {
             float recoveryDuration = _sourceSettings.RecoveryDuration;
@@ -128,12 +109,28 @@ namespace MineAndRefact.Core
             if (_sourceSettings.MiningResource == null)
                 throw new System.ArgumentNullException(nameof(_sourceSettings.MiningResource));
 
-            for(int i = 0; i < _sourceSettings.MiningResourceAmount; i++)
+            for (int i = 0; i < _sourceSettings.MiningResourceAmount; i++)
             {
                 IResource resource = Instantiate(_sourceSettings.MiningResource, DropResourcePosition, Quaternion.identity);
                 resource.Extract();
             }
 
+        }
+
+        public void Mine()
+        {
+            if(_kickAmountUntilDepletion > 0)
+            {
+                _kickAmountUntilDepletion--;
+
+                if (IsDepletion)
+                    StartCoroutine(Recovery());
+
+                CachedTransform.DORewind();
+                CachedTransform.DOPunchScale(_scaleOnMining, _scaleOnMiningDuration);
+
+                ExtractResources();
+            }
         }
     }
 }

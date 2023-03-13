@@ -1,4 +1,3 @@
-using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,19 +13,16 @@ namespace MineAndRefact.Core
         [SerializeField] private PlayerSettings _playerSettings;
         [SerializeField] private Transform _dropResourcePoint;
         
-
         private Animator _animator;
         private bool _hasAnimator;
         private PlayerController _playerController;
         private bool _hasPlayerController;
-        private Vector3 _moveDirection = new Vector3();
+        private Vector3 _moveDirection;
         private Coroutine _mineCoroutine;
         private ISource _currentMiningSource;
         private Coroutine _dropCoroutine;
         private ISpot _currentDropingSpot;
         private Queue<IResource> _currentDropResourcesInSpot;
-        
-        
         
         public bool CanDoAction
         {
@@ -38,7 +34,6 @@ namespace MineAndRefact.Core
                     return _moveDirection == Vector3.zero;
             }
         }
-
 
         private Transform _cachedTransform;
         public Transform CachedTransform
@@ -74,6 +69,12 @@ namespace MineAndRefact.Core
         }
 
 
+        private void OnValidate()
+        {
+            if (_playerSettings == null)
+                throw new System.ArgumentNullException(nameof(_playerSettings));
+        }
+
         private void Awake()
         {
             if (_playerSettings == null)
@@ -81,14 +82,7 @@ namespace MineAndRefact.Core
 
             _hasPlayerController = TryGetComponent<PlayerController>(out _playerController);
             _hasAnimator = TryGetComponent<Animator>(out _animator) && _animator.isActiveAndEnabled;
-
             _currentDropResourcesInSpot = new Queue<IResource>();
-        }
-
-        private void OnValidate()
-        {
-            if (_playerSettings == null)
-                throw new System.ArgumentNullException(nameof(_playerSettings));
         }
 
         private void Update()
@@ -123,8 +117,7 @@ namespace MineAndRefact.Core
             if(other.TryGetComponent<IResource>(out IResource resource) && resource.CanPickUp)
             {
                 resource.PickUp();
-                string resourceId = resource.ResourceId;
-                CachedResourceHolder.IncreaseResourceAmount(resourceId, 1);
+                CachedResourceHolder.IncreaseResourceAmount(resource.ResourceId, 1);
             }
 
             if(other.TryGetComponent<ISource>(out ISource source))
@@ -181,7 +174,6 @@ namespace MineAndRefact.Core
                     if (_currentDropResourcesInSpot.Count > 0)
                         ClearAndDestroyDropResources();
                 }
-                    
             }
         }
 
@@ -215,17 +207,9 @@ namespace MineAndRefact.Core
 
                 if (_currentDropResourcesInSpot.Count > 0)
                     ClearAndDestroyDropResources();
-                    
             }
         }
 
-
-        public void Move(Vector2 direction)
-        {
-            _moveDirection.Set(direction.x, 0, direction.y);
-            CachedNavMeshAgent.Move(_moveDirection * _playerSettings.MovementMultiplier * Time.deltaTime);
-            Rotate();
-        }
 
         private void Rotate()
         {
@@ -233,6 +217,23 @@ namespace MineAndRefact.Core
             rotateDirection.Normalize();
             float rotation = Mathf.Atan2(rotateDirection.x, rotateDirection.z) * Mathf.Rad2Deg;
             CachedTransform.rotation = Quaternion.Euler(0, rotation, 0);
+        }
+
+        private void ClearAndDestroyDropResources()
+        {
+            while (_currentDropResourcesInSpot.TryDequeue(out IResource resource))
+            {
+                resource.ResourceDestroy();
+            }
+        }
+
+        private Vector3 GetRandomResourceScutter()
+        {
+            return new Vector3(
+                Random.Range(_playerSettings.MinDropResourceInSpotScatter.x, _playerSettings.MaxDropResourceInSpotScatter.x),
+                Random.Range(_playerSettings.MinDropResourceInSpotScatter.y, _playerSettings.MaxDropResourceInSpotScatter.y),
+                Random.Range(_playerSettings.MinDropResourceInSpotScatter.z, _playerSettings.MaxDropResourceInSpotScatter.z)
+                );
         }
 
         private IEnumerator MineCoroutine(ISource source)
@@ -254,11 +255,9 @@ namespace MineAndRefact.Core
                     delay = _playerSettings.DefaultActionDelay / mineSpeed;
 
                 yield return new WaitForSeconds(delay);
-
                 source.Mine();
-
-                yield return null;
             }
+            yield break;
         }
         public Coroutine Mine(ISource source)
         {
@@ -267,13 +266,14 @@ namespace MineAndRefact.Core
 
         private IEnumerator DropInSpotCoroutine(ISpot spot)
         {
-            while (spot != null)
+            while (spot != null && !spot.IsRecyclingProcessed && !spot.IsFullLoaded)
             {
                 int resourceAmount = CachedResourceHolder.GetResourceAmount(spot.SpotSettings.RequiredResource.ResourceId);
                 if (resourceAmount <= 0)
                     break;
 
                 int maxDropResourceAmount = _playerSettings.MaxDropResourceAmountInOneTime;
+
                 if (maxDropResourceAmount > spot.RemainsToLoadAmountResources)
                     maxDropResourceAmount = spot.RemainsToLoadAmountResources;
 
@@ -283,7 +283,6 @@ namespace MineAndRefact.Core
                 for (int i = 0; i < maxDropResourceAmount; i++)
                 {
                     IResource resource = Instantiate(spot.SpotSettings.RequiredResource, _dropResourcePoint.position, Quaternion.identity);
-
                     resource.SetEnableInteractionComponents(false);
                     _currentDropResourcesInSpot.Enqueue(resource);
 
@@ -307,30 +306,18 @@ namespace MineAndRefact.Core
                     resource.ResourceDestroy();
                 }
             }
-
             yield break;
         }
         public Coroutine DropInSpot(ISpot spot)
         {
             return StartCoroutine(DropInSpotCoroutine(spot));
         }
-        
 
-        private void ClearAndDestroyDropResources()
+        public void Move(Vector2 direction)
         {
-            while(_currentDropResourcesInSpot.TryDequeue(out IResource resource))
-            {
-                resource.ResourceDestroy();
-            }
-        }
-
-        private Vector3 GetRandomResourceScutter()
-        {
-            return new Vector3(
-                Random.Range(_playerSettings.MinDropResourceInSpotScatter.x, _playerSettings.MaxDropResourceInSpotScatter.x),
-                Random.Range(_playerSettings.MinDropResourceInSpotScatter.y, _playerSettings.MaxDropResourceInSpotScatter.y),
-                Random.Range(_playerSettings.MinDropResourceInSpotScatter.z, _playerSettings.MaxDropResourceInSpotScatter.z)
-                );
+            _moveDirection.Set(direction.x, 0, direction.y);
+            CachedNavMeshAgent.Move(_playerSettings.MovementMultiplier * Time.deltaTime * _moveDirection);
+            Rotate();
         }
     }
 }

@@ -31,18 +31,18 @@ namespace MineAndRefact.Core
             _controls.Disable();
         }
 
-
-        public void OnMovement(InputAction.CallbackContext context)
+        
+        private void OnMovement(InputAction.CallbackContext context)
         {
             _direction = context.ReadValue<Vector2>();
         }
 
-        public void OnJoystickHold(InputAction.CallbackContext context)
+        private void OnJoystickHold(InputAction.CallbackContext context)
         {
             _isHoldJoystick = context.control.IsPressed();
         }
 
-        public void OnJoystickRealeased(InputAction.CallbackContext context)
+        private void OnJoystickRealeased(InputAction.CallbackContext context)
         {
             _isHoldJoystick = context.control.IsPressed();
         }

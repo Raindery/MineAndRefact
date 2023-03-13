@@ -43,18 +43,18 @@ namespace MineAndRefact.Core
             }
         }
 
+        private void OnEnable()
+        {
+            StartCoroutine(SaveWithDuration());
+        }
+
         private void Start()
         {
             if (_dataService.DataExsist)
                 Load();
         }
 
-        private void OnEnable()
-        {
-            StartCoroutine(SaveWithDuration());
-        }
-
-
+        
         private IEnumerator SaveWithDuration()
         {
             while (true)

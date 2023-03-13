@@ -7,6 +7,7 @@ namespace MineAndRefact.Core.UI
     {
         [SerializeField] private TextMeshProUGUI _recoveryDurationText;
 
+
         private void Awake()
         {
             if (_recoveryDurationText == null)
@@ -30,8 +31,5 @@ namespace MineAndRefact.Core.UI
         {
             _recoveryDurationText.text = System.Math.Round(recoveryDuration, 1).ToString();
         }
-
     }
 }
-
-

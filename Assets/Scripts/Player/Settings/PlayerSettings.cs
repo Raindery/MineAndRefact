@@ -19,8 +19,6 @@ namespace MineAndRefact.Core
         [SerializeField] private float _dropResourceInSpotDelay = 0.2f;
         [SerializeField] private float _dropResourceInSpotDuration = 0.5f;
 
-
-
         public int MaxDropResourceAmountInOneTime => _maxDropResourceAmountInOneTime;
         public float MovementMultiplier => _movementMultiplier;
         public float DefaultActionDelay => _defaultActionDelay;

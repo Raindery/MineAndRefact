@@ -8,8 +8,6 @@ namespace MineAndRefact.Core
         bool IsRecyclingProcessed { get; }
         int RemainsToLoadAmountResources { get; }
 
-
         void LoadRequiredResource(string resourceId);
     }
 }
-

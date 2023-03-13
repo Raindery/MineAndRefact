@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
 
 namespace MineAndRefact.Core
 {
@@ -21,7 +18,6 @@ namespace MineAndRefact.Core
         [SerializeField] private float _recoveryDuration = 1f;
         [Space]
         [SerializeField] private Resource _miningResource;
-
 
         public float InteractionRadius => _interactionRadius;
         public float MineSpeed => _mineSpeed;

@@ -14,7 +14,7 @@ namespace MineAndRefact.Core
         [Header("Gameplay Event Listener")]
         [SerializeField] private GameplayEventListener _gameplayEventListener;
 
-        private Dictionary<string, object> _saveLoadData = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _saveLoadData = new();
 
         public string Id => DATA_ID;
 
@@ -27,7 +27,6 @@ namespace MineAndRefact.Core
                 return false;
 
             return true;
-
         }
 
         public int GetResourceAmount(string resourceId)
@@ -59,7 +58,6 @@ namespace MineAndRefact.Core
             {
                 Debug.LogWarning($"Unable increase resource amount because resource data with id - {resourceId} is not found");
             }
-                
         }
 
         public void DecreaseResourceAmount(string resourceId, int decreaseValue)
@@ -78,7 +76,6 @@ namespace MineAndRefact.Core
             {
                 Debug.LogWarning($"Unable decrease resource amount because resource data with id - {resourceId} is not found");
             }
-                
         }
 
         public SaveLoadData CollectData()
@@ -93,13 +90,11 @@ namespace MineAndRefact.Core
 
         public void SetData(SaveLoadData data)
         {
-            int convertedAmount;
-
             foreach (ResourceHolderData resourceHolderData in _availableResources)
             {
                 if(data.Data.TryGetValue(resourceHolderData.Id, out object amount))
                 {
-                    convertedAmount = System.Convert.ToInt32(amount);
+                    int convertedAmount = System.Convert.ToInt32(amount);
                     if (convertedAmount <= 0)
                         continue;
 

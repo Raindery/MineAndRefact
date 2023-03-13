@@ -1,8 +1,6 @@
+using DG.Tweening;
 using System.Collections;
 using UnityEngine;
-using DG.Tweening;
-using Cysharp.Threading.Tasks;
-using System.Threading.Tasks;
 
 namespace MineAndRefact.Core
 {
@@ -14,15 +12,11 @@ namespace MineAndRefact.Core
         private bool _canPickUp;
         private BoxCollider _collider;
         private bool _hasCollider;
-        private bool _isInteractionsDisabled;
         private Vector3 _minDropImpulse;
         private Vector3 _maxDropImpulse;
         
-
-
         public ResourceData ResourceSettings => _resourceSettings;
         public bool CanPickUp => _canPickUp;
-        
         public string ResourceId
         {
             get
@@ -81,10 +75,8 @@ namespace MineAndRefact.Core
                 throw new System.ArgumentNullException(nameof(_resourceSettings));
 
             CachedSphereCollider.radius = _resourceSettings.PickUpRadius;
-
             _minDropImpulse = _resourceSettings.MinDropImpulse;
             _maxDropImpulse = _resourceSettings.MaxDropImpulse;
-
             _hasCollider = TryGetComponent<BoxCollider>(out _collider);
         }
 
@@ -105,6 +97,25 @@ namespace MineAndRefact.Core
             yield break;
         }
 
+        private Vector3 GetRandomImpulse()
+        {
+            return new Vector3(
+                    Random.Range(_minDropImpulse.x, _maxDropImpulse.x),
+                    Random.Range(_minDropImpulse.y, _maxDropImpulse.y),
+                    Random.Range(_minDropImpulse.z, _maxDropImpulse.z)
+                    );
+        }
+
+        public Coroutine MoveTo(Vector3 target, float duration)
+        {
+            return StartCoroutine(MoveToCoroutine(target, duration));
+        }
+        private IEnumerator MoveToCoroutine(Vector3 target, float duration)
+        {
+            yield return CachedTransform.DOMove(target, duration).WaitForCompletion();
+            yield break;
+        }
+
         public void Extract()
         {
             StartCoroutine(WaitPickUpDuration());
@@ -115,19 +126,6 @@ namespace MineAndRefact.Core
         public void PickUp()
         {
             ResourceDestroy();
-        }
-
-        
-
-        public Coroutine MoveTo(Vector3 target, float duration)
-        {
-            return StartCoroutine(MoveToCoroutine(target, duration));
-        }
-
-        private IEnumerator MoveToCoroutine(Vector3 target, float duration)
-        {
-            yield return CachedTransform.DOMove(target, duration).WaitForCompletion();
-            yield break;
         }
 
         public void SetEnableInteractionComponents(bool value)
@@ -141,15 +139,6 @@ namespace MineAndRefact.Core
         public void ResourceDestroy()
         {
             Destroy(gameObject);
-        }
-
-        private Vector3 GetRandomImpulse()
-        {
-            return new Vector3(
-                    Random.Range(_minDropImpulse.x, _maxDropImpulse.x),
-                    Random.Range(_minDropImpulse.y, _maxDropImpulse.y),
-                    Random.Range(_minDropImpulse.z, _maxDropImpulse.z)
-                    );
         }
     }
 }
