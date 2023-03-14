@@ -95,6 +95,8 @@ namespace MineAndRefact.Core
 
         private void Awake()
         {
+            Application.targetFrameRate = 60;
+
             if (_playerSettings == null)
                 throw new System.ArgumentNullException(nameof(_playerSettings));
 

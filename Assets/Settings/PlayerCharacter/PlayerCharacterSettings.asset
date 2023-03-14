@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _movementMultiplier: 5
   _defaultActionDelay: 1
-  _maxDropResourceAmountInOneTime: 2
+  _maxDropResourceAmountInOneTime: 5
   _minDropResourceInSpotScatter: {x: -1, y: 1, z: -1}
   _maxDropResourceInSpotScatter: {x: 1, y: 1, z: 1}
   _scutterMovementDuration: 0.5
