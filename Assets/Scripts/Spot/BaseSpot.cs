@@ -15,13 +15,14 @@ namespace MineAndRefact.Core
         [SerializeField] private Transform _resourceDropPoint;
         [Header("UI")]
         [SerializeField] private UISpot _uiSpot;
+        [Header("Model")]
+        [SerializeField] private Transform _spotModel;
         [Header("Animation")]
         [SerializeField] private Vector3 _additionalScaleOnDrop = Vector3.one;
         [SerializeField] private float _scaleOnDropDuration = 0.5f;
 
         private int _remainsToLoadAmountResources;
         private bool _isRecyclingProcessed;
-        private bool _hasSpotUi;
 
         private Vector3 DropResourcePosition
         {
@@ -33,6 +34,8 @@ namespace MineAndRefact.Core
                 return CachedTransform.position;
             }
         }
+        private bool HasSpotUi => _uiSpot != null;
+        private bool HasModel => _spotModel != null;
 
         public SpotData SpotSettings => _spotSettings;
         public bool IsFullLoaded => _remainsToLoadAmountResources <= 0;
@@ -77,12 +80,11 @@ namespace MineAndRefact.Core
 
             CachedSphereCollider.radius = _spotSettings.IteractionRadius;
             _remainsToLoadAmountResources = _spotSettings.AmountRequiredResource;
-            _hasSpotUi = _uiSpot != null;
         }
 
         private void Start()
         {
-            if (_hasSpotUi)
+            if (HasSpotUi)
             {
                 _uiSpot.ShowAmountRequired();
                 _uiSpot.UpdateAmountResource(_remainsToLoadAmountResources);
@@ -91,7 +93,8 @@ namespace MineAndRefact.Core
 
         private void OnDisable()
         {
-            CachedTransform.DOKill();
+            if(HasModel)
+                _spotModel.DOKill();
         }
 
 
@@ -100,18 +103,18 @@ namespace MineAndRefact.Core
             _isRecyclingProcessed = true;
             float recyclingDuration = _spotSettings.RecyclingDuration;
 
-            if (_hasSpotUi)
+            if (HasSpotUi)
                 _uiSpot.ShowRecyclingProgress();
 
             while (recyclingDuration > 0)
             {
-                if (_hasSpotUi)
+                if (HasSpotUi)
                     _uiSpot.UpdateRecyclingProgress(recyclingDuration);
                 yield return new WaitForSeconds(RECYCLING_PROGRESS_UPDATE_STEP);
                 recyclingDuration -= RECYCLING_PROGRESS_UPDATE_STEP;
             }
 
-            if (_hasSpotUi)
+            if (HasSpotUi)
                 _uiSpot.HideRecyclingProgress();
 
             if (_spotSettings.ReceivedResource == null)
@@ -119,12 +122,12 @@ namespace MineAndRefact.Core
 
             for (int i = 0; i < _spotSettings.AmountReceivedResource; i++)
             {
-                IResource resource = Instantiate(_spotSettings.ReceivedResource, DropResourcePosition, Quaternion.identity);
+                IResource resource = Instantiate(_spotSettings.ReceivedResource, DropResourcePosition + _spotSettings.RandomDropResourceOffset, Quaternion.identity);
                 resource.Extract();
             }
 
             _remainsToLoadAmountResources = _spotSettings.AmountRequiredResource;
-            if (_hasSpotUi)
+            if (HasSpotUi)
             {
                 _uiSpot.ShowAmountRequired();
                 _uiSpot.UpdateAmountResource(_remainsToLoadAmountResources);
@@ -146,15 +149,19 @@ namespace MineAndRefact.Core
             {
                 _remainsToLoadAmountResources--;
 
-                if (_hasSpotUi)
+                if (HasSpotUi)
                     _uiSpot.UpdateAmountResource(_remainsToLoadAmountResources);
 
-                CachedTransform.DOComplete();
-                CachedTransform.DOPunchScale(_additionalScaleOnDrop, _scaleOnDropDuration, elasticity: 0.5f);
+
+                if (HasModel)
+                {
+                    _spotModel.DOComplete();
+                    _spotModel.DOPunchScale(_additionalScaleOnDrop, _scaleOnDropDuration, elasticity: 0.5f);
+                }
 
                 if (IsFullLoaded)
                 {
-                    if (_hasSpotUi)
+                    if (HasSpotUi)
                         _uiSpot.HideAmountRequired();
                     
                     StartCoroutine(RecyclingCoroutine());

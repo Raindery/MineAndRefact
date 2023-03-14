@@ -227,15 +227,6 @@ namespace MineAndRefact.Core
             }
         }
 
-        private Vector3 GetRandomResourceScutter()
-        {
-            return new Vector3(
-                Random.Range(_playerSettings.MinDropResourceInSpotScatter.x, _playerSettings.MaxDropResourceInSpotScatter.x),
-                Random.Range(_playerSettings.MinDropResourceInSpotScatter.y, _playerSettings.MaxDropResourceInSpotScatter.y),
-                Random.Range(_playerSettings.MinDropResourceInSpotScatter.z, _playerSettings.MaxDropResourceInSpotScatter.z)
-                );
-        }
-
         private IEnumerator MineCoroutine(ISource source)
         {
             float mineSpeed = source.SourceSettings.MineSpeed;
@@ -286,7 +277,7 @@ namespace MineAndRefact.Core
                     resource.SetEnableInteractionComponents(false);
                     _currentDropResourcesInSpot.Enqueue(resource);
 
-                    Vector3 scutter = resource.CachedTransform.position + GetRandomResourceScutter();
+                    Vector3 scutter = resource.CachedTransform.position + _playerSettings.RandomDropResourceInSpotScatter;
                     if (i >= maxDropResourceAmount - 1)
                         yield return resource.MoveTo(scutter, _playerSettings.ScutterMovementDuration);
                     else

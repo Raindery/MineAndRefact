@@ -15,5 +15,5 @@ MonoBehaviour:
   _resourceId: Wood
   _pickUpDuration: 2
   _pickUpRadius: 0.5
-  _minDropImpulse: {x: -0.5, y: 0.5, z: -0.5}
-  _maxDropImpulse: {x: 0.5, y: 1, z: 0.5}
+  _minDropImpulse: {x: -2, y: 3, z: -2}
+  _maxDropImpulse: {x: 2, y: 3, z: 2}

@@ -24,6 +24,14 @@ namespace MineAndRefact.Core
         public float DefaultActionDelay => _defaultActionDelay;
         public Vector3 MinDropResourceInSpotScatter => _minDropResourceInSpotScatter;
         public Vector3 MaxDropResourceInSpotScatter => _maxDropResourceInSpotScatter;
+        public Vector3 RandomDropResourceInSpotScatter
+        {
+            get => new Vector3(
+                Random.Range(_minDropResourceInSpotScatter.x, _maxDropResourceInSpotScatter.x),
+                Random.Range(_minDropResourceInSpotScatter.y, _maxDropResourceInSpotScatter.y),
+                Random.Range(_minDropResourceInSpotScatter.z, _maxDropResourceInSpotScatter.z)
+                );
+        }
         public float ScutterMovementDuration => _scutterMovementDuration;
         public float DropResourceInSpotDelay => _dropResourceInSpotDelay;
         public float DropResourceInSpotDuration => _dropResourceInSpotDuration;

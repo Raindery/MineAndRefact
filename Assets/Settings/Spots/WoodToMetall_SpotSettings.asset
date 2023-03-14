@@ -18,3 +18,5 @@ MonoBehaviour:
   _receivedResource: {fileID: 863575600439384687, guid: 838362b8e6a65dd4681eb8553933606f, type: 3}
   _amountReceivedResource: 5
   _recyclingDuration: 10
+  _minDropResourceOffset: {x: -1, y: 0, z: -1}
+  _maxDropResourceOffset: {x: 1, y: 0, z: 1}

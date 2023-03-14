@@ -19,6 +19,14 @@ namespace MineAndRefact.Core
         public float PickUpRadius => _pickUpRadius;
         public Vector3 MinDropImpulse => _minDropImpulse;
         public Vector3 MaxDropImpulse => _maxDropImpulse;
+        public Vector3 RandomDropImpulse
+        {
+            get => new Vector3(
+                Random.Range(_minDropImpulse.x, _maxDropImpulse.x),
+                Random.Range(_minDropImpulse.y, _maxDropImpulse.y),
+                Random.Range(_minDropImpulse.z, _maxDropImpulse.z)
+                );
+        }
 
 
         private void OnValidate()

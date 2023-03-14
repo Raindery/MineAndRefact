@@ -12,8 +12,6 @@ namespace MineAndRefact.Core
         private bool _canPickUp;
         private BoxCollider _collider;
         private bool _hasCollider;
-        private Vector3 _minDropImpulse;
-        private Vector3 _maxDropImpulse;
         
         public ResourceData ResourceSettings => _resourceSettings;
         public bool CanPickUp => _canPickUp;
@@ -75,8 +73,6 @@ namespace MineAndRefact.Core
                 throw new System.ArgumentNullException(nameof(_resourceSettings));
 
             CachedSphereCollider.radius = _resourceSettings.PickUpRadius;
-            _minDropImpulse = _resourceSettings.MinDropImpulse;
-            _maxDropImpulse = _resourceSettings.MaxDropImpulse;
             _hasCollider = TryGetComponent<BoxCollider>(out _collider);
         }
 
@@ -97,15 +93,6 @@ namespace MineAndRefact.Core
             yield break;
         }
 
-        private Vector3 GetRandomImpulse()
-        {
-            return new Vector3(
-                    Random.Range(_minDropImpulse.x, _maxDropImpulse.x),
-                    Random.Range(_minDropImpulse.y, _maxDropImpulse.y),
-                    Random.Range(_minDropImpulse.z, _maxDropImpulse.z)
-                    );
-        }
-
         public Coroutine MoveTo(Vector3 target, float duration)
         {
             return StartCoroutine(MoveToCoroutine(target, duration));
@@ -119,7 +106,7 @@ namespace MineAndRefact.Core
         public void Extract()
         {
             StartCoroutine(WaitPickUpDuration());
-            Vector3 impulseVector = GetRandomImpulse();
+            Vector3 impulseVector = _resourceSettings.RandomDropImpulse;
             CachedRigidbody.AddForce(impulseVector, ForceMode.Impulse);
         }
 

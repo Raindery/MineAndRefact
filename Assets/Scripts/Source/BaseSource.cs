@@ -15,11 +15,12 @@ namespace MineAndRefact.Core
         [SerializeField] private Transform _resourceDropPoint;
         [Header("UI")]
         [SerializeField] private UISource _uiSource;
+        [Header("Model")]
+        [SerializeField] private Transform _sourceModel;
         [Header("Animation Settings")]
         [SerializeField] private Vector3 _scaleOnMining;
         [SerializeField] private float _scaleOnMiningDuration;
 
-        private bool _hasUi;
         private int _kickAmountUntilDepletion;
 
         private Vector3 DropResourcePosition
@@ -31,6 +32,8 @@ namespace MineAndRefact.Core
                 return CachedTransform.position;
             }
         }
+        private bool HasUi => _uiSource != null;
+        private bool HasModel => _sourceModel != null;
         public bool IsDepletion => _kickAmountUntilDepletion <= 0;
         public SourceData SourceSettings => _sourceSettings;
 
@@ -57,6 +60,7 @@ namespace MineAndRefact.Core
         }
 
         
+
         private void OnValidate()
         {
             if (_sourceSettings == null)
@@ -72,31 +76,31 @@ namespace MineAndRefact.Core
 
             CachedSphereCollider.radius = _sourceSettings.InteractionRadius;
             _kickAmountUntilDepletion = _sourceSettings.KickAmountUntilDeplection;
-            _hasUi = _uiSource != null;
         }
 
         private void OnDisable()
         {
-            CachedTransform.DOKill();
+            if (HasModel)
+                _sourceModel.DOKill();
         }
 
         private IEnumerator Recovery()
         {
             float recoveryDuration = _sourceSettings.RecoveryDuration;
 
-            if (_hasUi)
+            if (HasUi)
                 _uiSource.ShowRecoveryDuration();
 
             while (recoveryDuration > 0f)
             {
-                if (_hasUi)
+                if (HasUi)
                     _uiSource.DisplayRecoveryDuration(recoveryDuration);
 
                 yield return new WaitForSeconds(RECOVERY_UPDATE_STEP);
                 recoveryDuration -= RECOVERY_UPDATE_STEP;
             }
 
-            if (_hasUi)
+            if (HasUi)
                 _uiSource.HideRecoveryDuration();
 
             _kickAmountUntilDepletion = _sourceSettings.KickAmountUntilDeplection;
@@ -111,7 +115,7 @@ namespace MineAndRefact.Core
 
             for (int i = 0; i < _sourceSettings.MiningResourceAmount; i++)
             {
-                IResource resource = Instantiate(_sourceSettings.MiningResource, DropResourcePosition, Quaternion.identity);
+                IResource resource = Instantiate(_sourceSettings.MiningResource, DropResourcePosition + _sourceSettings.RandomDropResourceOffset, Quaternion.identity);
                 resource.Extract();
             }
 
@@ -126,8 +130,11 @@ namespace MineAndRefact.Core
                 if (IsDepletion)
                     StartCoroutine(Recovery());
 
-                CachedTransform.DOComplete();
-                CachedTransform.DOPunchScale(_scaleOnMining, _scaleOnMiningDuration, elasticity: 0.5f);
+                if (HasModel)
+                {
+                    _sourceModel.DOComplete();
+                    _sourceModel.DOPunchScale(_scaleOnMining, _scaleOnMiningDuration, elasticity: 0.5f);
+                }
 
                 ExtractResources();
             }
