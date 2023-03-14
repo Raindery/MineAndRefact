@@ -8,7 +8,7 @@ namespace MineAndRefact.Core
     [RequireComponent(typeof(SphereCollider))]
     public class BaseSpot : MonoBehaviour, ISpot
     {
-        private const float RECYCLING_PROGRESS_UPDATE_STEP = 0.1f;
+        protected const float RECYCLING_PROGRESS_UPDATE_STEP = 0.1f;
 
         [Header("General")]
         [SerializeField] private SpotData _spotSettings;
@@ -24,7 +24,7 @@ namespace MineAndRefact.Core
         private int _remainsToLoadAmountResources;
         private bool _isRecyclingProcessed;
 
-        private Vector3 DropResourcePosition
+        protected Vector3 DropResourcePosition
         {
             get
             {
@@ -34,8 +34,8 @@ namespace MineAndRefact.Core
                 return CachedTransform.position;
             }
         }
-        private bool HasSpotUi => _uiSpot != null;
-        private bool HasModel => _spotModel != null;
+        protected bool HasSpotUi => _uiSpot != null;
+        protected bool HasModel => _spotModel != null;
 
         public SpotData SpotSettings => _spotSettings;
         public bool IsFullLoaded => _remainsToLoadAmountResources <= 0;

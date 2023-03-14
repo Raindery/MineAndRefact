@@ -8,7 +8,7 @@ namespace MineAndRefact.Core
     [RequireComponent(typeof(SphereCollider))]
     public class BaseSource : MonoBehaviour, ISource
     {
-        private const float RECOVERY_UPDATE_STEP = 0.1f;
+        protected const float RECOVERY_UPDATE_STEP = 0.1f;
 
         [Header("General")]
         [SerializeField] private SourceData _sourceSettings;
@@ -23,7 +23,7 @@ namespace MineAndRefact.Core
 
         private int _kickAmountUntilDepletion;
 
-        private Vector3 DropResourcePosition
+        protected Vector3 DropResourcePosition
         {
             get
             {
@@ -32,8 +32,9 @@ namespace MineAndRefact.Core
                 return CachedTransform.position;
             }
         }
-        private bool HasUi => _uiSource != null;
-        private bool HasModel => _sourceModel != null;
+        protected bool HasUi => _uiSource != null;
+        protected bool HasModel => _sourceModel != null;
+
         public bool IsDepletion => _kickAmountUntilDepletion <= 0;
         public SourceData SourceSettings => _sourceSettings;
 
@@ -84,7 +85,7 @@ namespace MineAndRefact.Core
                 _sourceModel.DOKill();
         }
 
-        private IEnumerator Recovery()
+        private IEnumerator RecoveryCoroutine()
         {
             float recoveryDuration = _sourceSettings.RecoveryDuration;
 
@@ -107,6 +108,10 @@ namespace MineAndRefact.Core
             Debug.Log("Source recover!");
             yield break;
         }
+        public Coroutine Recovery()
+        {
+            return StartCoroutine(RecoveryCoroutine());
+        }
 
         private void ExtractResources()
         {
@@ -128,7 +133,7 @@ namespace MineAndRefact.Core
                 _kickAmountUntilDepletion--;
 
                 if (IsDepletion)
-                    StartCoroutine(Recovery());
+                    Recovery();
 
                 if (HasModel)
                 {

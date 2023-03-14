@@ -108,7 +108,6 @@ GameObject:
   - component: {fileID: 5235729532705670761}
   - component: {fileID: 5235729532705670765}
   - component: {fileID: 5235729532705670764}
-  - component: {fileID: 5235729532705670755}
   m_Layer: 0
   m_Name: BaseSource
   m_TagString: Untagged
@@ -165,22 +164,6 @@ MonoBehaviour:
   _sourceModel: {fileID: 1788639150722207227}
   _scaleOnMining: {x: -0.3, y: 0, z: -0.3}
   _scaleOnMiningDuration: 0.5
---- !u!208 &5235729532705670755
-NavMeshObstacle:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5235729532705670762}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
-  m_MoveThreshold: 0.1
-  m_Carve: 0
-  m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 0, z: 0}
-  m_TimeToStationary: 0.5
 --- !u!1 &5235729533207441055
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,6 +4,7 @@ namespace MineAndRefact.Core
     {
         SourceData SourceSettings { get; }
         bool IsDepletion { get; }
+        UnityEngine.Transform CachedTransform { get; }
 
         void Mine();
     }

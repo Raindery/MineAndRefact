@@ -4,7 +4,7 @@ using DG.Tweening;
 
 namespace MineAndRefact.Core.UI
 {
-    public class UIResource : MonoBehaviour
+    public sealed class UIResource : MonoBehaviour
     {
         [Header("General")]
         [SerializeField] private ResourceData _resourceComporator;

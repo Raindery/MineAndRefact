@@ -12,6 +12,8 @@ namespace MineAndRefact.Core
         [Header("General")]
         [SerializeField] private PlayerSettings _playerSettings;
         [SerializeField] private Transform _dropResourcePoint;
+        [Header("Gameplay Event Listener")]
+        [SerializeField] private GameplayEventListener _gameplayEventListener;
         
         private Animator _animator;
         private bool _hasAnimator;
@@ -34,6 +36,7 @@ namespace MineAndRefact.Core
                     return _moveDirection == Vector3.zero;
             }
         }
+        protected bool HasGameplayEventListener => _gameplayEventListener != null;
 
         private Transform _cachedTransform;
         public Transform CachedTransform
@@ -247,6 +250,9 @@ namespace MineAndRefact.Core
 
                 yield return new WaitForSeconds(delay);
                 source.Mine();
+
+                if (HasGameplayEventListener)
+                    _gameplayEventListener.SourceMined.Invoke(source);
             }
             yield break;
         }
@@ -295,6 +301,9 @@ namespace MineAndRefact.Core
 
                     spot.LoadRequiredResource(resource.ResourceId);
                     resource.ResourceDestroy();
+
+                    if (HasGameplayEventListener)
+                        _gameplayEventListener.SpotLoaded.Invoke(spot);
                 }
             }
             yield break;
