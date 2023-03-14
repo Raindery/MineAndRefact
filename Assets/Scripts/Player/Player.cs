@@ -16,9 +16,7 @@ namespace MineAndRefact.Core
         [SerializeField] private GameplayEventListener _gameplayEventListener;
         
         private Animator _animator;
-        private bool _hasAnimator;
         private PlayerController _playerController;
-        private bool _hasPlayerController;
         private Vector3 _moveDirection;
         private Coroutine _mineCoroutine;
         private ISource _currentMiningSource;
@@ -26,17 +24,34 @@ namespace MineAndRefact.Core
         private ISpot _currentDropingSpot;
         private Queue<IResource> _currentDropResourcesInSpot;
         
+        protected bool HasGameplayEventListener => _gameplayEventListener != null;
+        protected bool HasAnimator => _animator != null && _animator.isActiveAndEnabled;
+        protected bool HasPlayerController => _playerController != null;
+        protected Vector3 DropResourcePosition
+        {
+            get
+            {
+                if (_dropResourcePoint == null)
+                    return CachedTransform.position;
+                return _dropResourcePoint.position;
+            }
+        }
+        protected GameplayEventListener GameplayEventListener => _gameplayEventListener;
+        protected PlayerSettings PlayerSettings => _playerSettings;
+        protected PlayerController PlayerController => _playerController;
+        protected Animator Animator => _animator;
+
         public bool CanDoAction
         {
             get
             {
-                if (_hasPlayerController)
+                if (HasPlayerController)
                     return !_playerController.IsHoldJoystick;
                 else
                     return _moveDirection == Vector3.zero;
             }
         }
-        protected bool HasGameplayEventListener => _gameplayEventListener != null;
+
 
         private Transform _cachedTransform;
         public Transform CachedTransform
@@ -71,7 +86,7 @@ namespace MineAndRefact.Core
             }
         }
 
-
+        
         private void OnValidate()
         {
             if (_playerSettings == null)
@@ -83,8 +98,8 @@ namespace MineAndRefact.Core
             if (_playerSettings == null)
                 throw new System.ArgumentNullException(nameof(_playerSettings));
 
-            _hasPlayerController = TryGetComponent<PlayerController>(out _playerController);
-            _hasAnimator = TryGetComponent<Animator>(out _animator) && _animator.isActiveAndEnabled;
+            TryGetComponent<PlayerController>(out _playerController);
+            TryGetComponent<Animator>(out _animator);
             _currentDropResourcesInSpot = new Queue<IResource>();
         }
 
@@ -93,7 +108,7 @@ namespace MineAndRefact.Core
             if (Input.GetKeyDown(KeyCode.K))
                 Utils.ForceCrash(ForcedCrashCategory.Abort);
                 
-            if (_hasPlayerController)
+            if (HasPlayerController)
             {
                 if (_playerController.Direction != Vector2.zero)
                 {
@@ -109,7 +124,7 @@ namespace MineAndRefact.Core
 
         private void LateUpdate()
         {
-            if (_hasAnimator)
+            if (HasAnimator)
             {
                 _animator.SetFloat("MovementMagnitude", Mathf.Abs(_moveDirection.magnitude));
             }
@@ -150,7 +165,7 @@ namespace MineAndRefact.Core
                     _mineCoroutine = null;
                 }
 
-                if (_hasAnimator)
+                if (HasAnimator)
                     _animator.SetBool("IsMine", isCanMining);     
             }
 
@@ -187,7 +202,7 @@ namespace MineAndRefact.Core
                 if (_currentMiningSource != null && _currentMiningSource == source)
                     _currentMiningSource = null;
 
-                if (_hasAnimator)
+                if (HasAnimator)
                     _animator.SetBool("IsMine", false);
 
                 if(_mineCoroutine != null)
@@ -234,7 +249,7 @@ namespace MineAndRefact.Core
         {
             float mineSpeed = source.SourceSettings.MineSpeed;
 
-            if (_hasAnimator)
+            if (HasAnimator)
             {
                 _animator.SetFloat("MineSpeed", mineSpeed);
                 yield return new WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).IsName("Mining"));
@@ -243,7 +258,7 @@ namespace MineAndRefact.Core
             while (source != null && !source.IsDepletion)
             {
                 float delay;
-                if (_hasAnimator)
+                if (HasAnimator)
                     delay = _animator.GetCurrentAnimatorStateInfo(0).length;
                 else
                     delay = _playerSettings.DefaultActionDelay / mineSpeed;
@@ -279,7 +294,7 @@ namespace MineAndRefact.Core
 
                 for (int i = 0; i < maxDropResourceAmount; i++)
                 {
-                    IResource resource = Instantiate(spot.SpotSettings.RequiredResource, _dropResourcePoint.position, Quaternion.identity);
+                    IResource resource = Instantiate(spot.SpotSettings.RequiredResource, DropResourcePosition, Quaternion.identity);
                     resource.SetEnableInteractionComponents(false);
                     _currentDropResourcesInSpot.Enqueue(resource);
 

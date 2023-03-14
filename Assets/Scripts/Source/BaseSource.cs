@@ -34,9 +34,12 @@ namespace MineAndRefact.Core
         }
         protected bool HasUi => _uiSource != null;
         protected bool HasModel => _sourceModel != null;
+        protected Transform SourceModel => _sourceModel;
+        protected UISource UISource => _uiSource;
 
         public bool IsDepletion => _kickAmountUntilDepletion <= 0;
         public SourceData SourceSettings => _sourceSettings;
+
 
         private SphereCollider _sphereCollider;
         public SphereCollider CachedSphereCollider
@@ -61,7 +64,6 @@ namespace MineAndRefact.Core
         }
 
         
-
         private void OnValidate()
         {
             if (_sourceSettings == null)
@@ -84,6 +86,7 @@ namespace MineAndRefact.Core
             if (HasModel)
                 _sourceModel.DOKill();
         }
+
 
         private IEnumerator RecoveryCoroutine()
         {
@@ -113,7 +116,7 @@ namespace MineAndRefact.Core
             return StartCoroutine(RecoveryCoroutine());
         }
 
-        private void ExtractResources()
+        protected void ExtractResources()
         {
             if (_sourceSettings.MiningResource == null)
                 throw new System.ArgumentNullException(nameof(_sourceSettings.MiningResource));

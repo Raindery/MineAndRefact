@@ -36,11 +36,14 @@ namespace MineAndRefact.Core
         }
         protected bool HasSpotUi => _uiSpot != null;
         protected bool HasModel => _spotModel != null;
+        protected UISpot UISpot => _uiSpot;
+        protected Transform SpotModel => _spotModel;
 
         public SpotData SpotSettings => _spotSettings;
         public bool IsFullLoaded => _remainsToLoadAmountResources <= 0;
         public bool IsRecyclingProcessed => _isRecyclingProcessed;
         public int RemainsToLoadAmountResources => _remainsToLoadAmountResources;
+
 
         private Transform _cachedTransform;
         public Transform CachedTransform
@@ -136,6 +139,11 @@ namespace MineAndRefact.Core
             _isRecyclingProcessed = false;
             yield break;
         }
+        public Coroutine Recycling()
+        {
+            return StartCoroutine(RecyclingCoroutine());
+        }
+
 
         public void LoadRequiredResource(string resourceId)
         {
@@ -163,8 +171,8 @@ namespace MineAndRefact.Core
                 {
                     if (HasSpotUi)
                         _uiSpot.HideAmountRequired();
-                    
-                    StartCoroutine(RecyclingCoroutine());
+
+                    Recycling();
                 }
             }
         }

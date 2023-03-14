@@ -10,8 +10,6 @@ namespace MineAndRefact.Core
         [SerializeField] private ResourceData _resourceSettings;
 
         private bool _canPickUp;
-        private BoxCollider _collider;
-        private bool _hasCollider;
         
         public ResourceData ResourceSettings => _resourceSettings;
         public bool CanPickUp => _canPickUp;
@@ -24,6 +22,7 @@ namespace MineAndRefact.Core
                 return _resourceSettings.ResourceId;
             }
         }
+
 
         private Transform _cachedTransform;
         public Transform CachedTransform
@@ -73,7 +72,6 @@ namespace MineAndRefact.Core
                 throw new System.ArgumentNullException(nameof(_resourceSettings));
 
             CachedSphereCollider.radius = _resourceSettings.PickUpRadius;
-            _hasCollider = TryGetComponent<BoxCollider>(out _collider);
         }
 
         private void OnDisable()
@@ -117,8 +115,6 @@ namespace MineAndRefact.Core
 
         public void SetEnableInteractionComponents(bool value)
         {
-            if (_hasCollider)
-                _collider.enabled = value;
             CachedRigidbody.isKinematic = !value;
             CachedSphereCollider.enabled = !value;
         }
